@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    book name: <input type="text" id="book_name">
+    author name: <input type="text" id="author">
+    <button onclick="show_books()">show books</button>
+    <button onclick="add_book()">add book</button>
+    <div id="books"></div>
+    <div id="messages"></div>
+
+</body>
+
+
+<script>
+    const SERVER = 'http://127.0.0.1:8000/books'
+    const show_books = () => {
+        axios.get(SERVER)
+            .then(res => {
+
+                console.log(res.data)
+                books.innerHTML = ""
+                res.data.forEach(book => {
+                    books.innerHTML += `<div>book name: ${book.book_name},author: ${book.book_author}
+                    <button onclick="edit_book(${book.id})">edit</button>
+                    <button onclick="del_book(${book.id})">delete</button>
+
+                    </div>`}
+                )
+
+            })
+    }
+
+    const edit_book = (book_id) => {
+        payload = {
+            "book_name": book_name.value,
+            "book_author": author.value
+        }
+
+        axios.put(`${SERVER}/${book_id}`, payload)
+            .then(res =>
+                messages.innerHTML = res.data.message)
+    }
+
+
+    const add_book = () => {
+        payload = {
+            "book_name": book_name.value,
+            "book_author": author.value
+        }
+
+        axios.post(SERVER, payload)
+            .then(res => {
+                messages.innerHTML = res.data.messages
+            })
+        show_books()
+    }
+    const del_book = (book_id) => {
+
+        axios.delete(`${SERVER}/${book_id}`)
+            .then(res => {
+                if (res.data.message) {
+                    messages.innerHTML = res.data.message
+                }
+                else {
+                    console.log(res.data);
+                }
+            })
+
+        show_books()
+
+    }
+show_books()
+
+</script>
+
+</html>
